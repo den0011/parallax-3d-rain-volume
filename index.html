@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="css/player.css">
+	<script src="js/app.js" defer></script>
+	<script src="js/rain.js" defer></script>
+	
+
+	<script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+	<script src="play.js"></script>
+
+</head>
+<body>
+
+	<section class="layers">
+		<div class="layers__container">
+			<div class="layers__item layer-1" style="background-image: url(img/layer-1.jpg);"></div>
+			<div class="layers__item layer-2" style="background-image: url(img/layer-2.png);"></div>
+			<div class="layers__item layer-3">
+		
+
+				<div id="container"></div>
+			
+
+			</div>
+			<div class="layers__item layer-4">
+				<canvas class="rain"></canvas>
+			</div>
+			<div class="layers__item layer-5" style="background-image: url(img/layer-5.png);"></div>
+			<div class="layers__item layer-6" style="background-image: url(img/layer-6.png);"></div>
+		</div>
+</section>
+
+<script type="text/babel">
+
+class AudioPlayer extends React.Component {
+    constructor(props) {
+      super(props);
+      this.audioRefs = [
+        React.createRef(),
+        React.createRef(),
+        React.createRef(),
+      ];
+      this.state = {
+        isPlaying: [false, false, false],
+        volumes: [0.5, 0.5, 0.5],
+        tracks: [
+          { src: 'sound/1.mp3' },
+          { src: 'sound/2.mp3' },
+          { src: 'sound/3.mp3' },
+        ],
+      };
+    }
+  
+    togglePlay = (index) => {
+      const audio = this.audioRefs[index].current;
+      const { isPlaying, tracks } = this.state;
+      const newIsPlaying = [...isPlaying];
+      newIsPlaying[index] = !newIsPlaying[index];
+  
+      if (newIsPlaying[index]) {
+        audio.src = tracks[index].src;
+        audio.volume = this.state.volumes[index];
+        audio.play();
+      } else {
+        audio.pause();
+      }
+  
+      this.setState({ isPlaying: newIsPlaying });
+    };
+  
+    handleVolumeChange = (event, index) => {
+      const volume = event.target.value;
+      const audio = this.audioRefs[index].current;
+      audio.volume = volume;
+      const newVolumes = [...this.state.volumes];
+      newVolumes[index] = volume;
+      this.setState({ volumes: newVolumes });
+    };
+  
+    handleEnded = (index) => {
+      const audio = this.audioRefs[index].current;
+      audio.currentTime = 0; // Сбрасываем время воспроизведения
+      audio.play(); // Запускаем воспроизведение с начала
+    };
+  
+    render() {
+      const { isPlaying, volumes, tracks } = this.state;
+  
+      return (
+        <div className="audio-player">
+          <div className="buttons-container">
+            {tracks.map((track, index) => (
+              <div key={index} className="track-container">
+                <button
+                  onClick={() => this.togglePlay(index)}
+                  className={`play-button ${isPlaying[index] ? 'playing' : ''}`}
+                >
+                  {isPlaying[index] ? 'Pause' : 'Play'}
+                </button>
+                <VolumeIndicator volume={volumes[index]} onChange={(e) => this.handleVolumeChange(e, index)} />
+              </div>
+            ))}
+          </div>
+  
+          {tracks.map((track, index) => (
+            <audio
+              key={index}
+              ref={this.audioRefs[index]}
+              src={track.src}
+              volume={volumes[index]}
+              onEnded={() => this.handleEnded(index)} // Добавляем обработчик события "ended"
+            />
+          ))}
+        </div>
+      );
+    }
+  }
+  
+  const VolumeIndicator = ({ volume, onChange }) => {
+    return (
+      <div className="volume-indicator">
+        <span className="volume-symbol">🔊</span>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={volume}
+          onChange={onChange}
+          className="volume-slider"
+        />
+      </div>
+    );
+  };
+  
+      ReactDOM.render(
+          <div>
+          <AudioPlayer/>
+           </div>,    
+  
+      document.querySelector("#container")
+  );
+
+</script>
+
+
+</body>
+</html>
