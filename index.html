@@ -14,7 +14,7 @@
 	<script src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
-	<script src="play.js"></script>
+
 
 </head>
 <body>
@@ -25,10 +25,8 @@
 			<div class="layers__item layer-2" style="background-image: url(img/layer-2.png);"></div>
 			<div class="layers__item layer-3">
 		
-
 				<div id="container"></div>
-			
-
+	
 			</div>
 			<div class="layers__item layer-4">
 				<canvas class="rain"></canvas>
@@ -87,8 +85,8 @@ class AudioPlayer extends React.Component {
   
     handleEnded = (index) => {
       const audio = this.audioRefs[index].current;
-      audio.currentTime = 0; // Сбрасываем время воспроизведения
-      audio.play(); // Запускаем воспроизведение с начала
+      audio.currentTime = 0; 
+      audio.play(); 
     };
   
     render() {
@@ -116,7 +114,7 @@ class AudioPlayer extends React.Component {
               ref={this.audioRefs[index]}
               src={track.src}
               volume={volumes[index]}
-              onEnded={() => this.handleEnded(index)} // Добавляем обработчик события "ended"
+              onEnded={() => this.handleEnded(index)} 
             />
           ))}
         </div>
